@@ -1,34 +1,38 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const images = document.querySelectorAll('.image');
-  let draggedElement = null; // Track the currently dragged element
-
-  images.forEach(image => {
-    image.addEventListener('dragstart', dragStart);
-    image.addEventListener('dragover', dragOver);
-    image.addEventListener('drop', drop);
-  });
-
-  function dragStart(e) {
-    draggedElement = e.target; // Store the element being dragged
-    e.dataTransfer.setData('text/plain', e.target.id); // Set data to transfer
-  }
-
-  function dragOver(e) {
-    e.preventDefault(); // Allow the drop
-  }
-
-  function drop(e) {
-    e.preventDefault();
-    const dropzone = e.target; // Element where the drop occurs
-
-    if (dropzone.classList.contains('image') && draggedElement) {
-      // Swap the backgroundImage of the draggedElement and the dropzone
-      const tempImage = dropzone.style.backgroundImage;
-      dropzone.style.backgroundImage = draggedElement.style.backgroundImage;
-      draggedElement.style.backgroundImage = tempImage;
-
-      // Reset the draggedElement after the drop
-      draggedElement = null;
+//your code here
+let dragindex = 0;
+let dropindex = 0;
+let clone = "";
+const images = document.querySelectorAll(".image");
+function drag(e) {
+  e.dataTransfer.setData("text", e.target.id);
+}
+function allowDrop(e) {
+  e.preventDefault();
+}
+function drop(e) {
+  clone = e.target.cloneNode(true);
+  let data = e.dataTransfer.getData("text");
+  let nodelist = document.getElementById("parent").childNodes;
+  console.log(data, e.target.id);
+  for (let i = 0; i < nodelist.length; i++) {
+    if (nodelist[i].id == data) {
+      dragindex = i;
     }
   }
-});
+  dragdrop(clone);
+  document
+    .getElementById("parent")
+    .replaceChild(document.getElementById(data), e.target);
+  document
+    .getElementById("parent")
+    .insertBefore(
+      clone,
+      document.getElementById("parent").childNodes[dragindex]
+    );
+}
+const dragdrop = (image) => {
+  image.ondragstart = drag;
+  image.ondragover = allowDrop;
+  image.ondrop = drop;
+};
+images.forEach(dragdrop);
